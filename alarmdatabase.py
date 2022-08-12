@@ -1,4 +1,5 @@
 import sqlite3
+from tkinter import NO
 
 class DataBaseBot():
     def __init__(self, base: str) -> None:
@@ -7,8 +8,15 @@ class DataBaseBot():
         curs.execute("""CREATE TABLE IF NOT EXISTS users(
                             user_id INT PRIMARY KEY,
                             user_name TEXT,
-                            name TEXT
+                            name TEXT,
                             subs INT);
+                        """)
+        curs.execute("""CREATE TABLE IF NOT EXISTS cams(
+                            cloud_id TEXT PRIMARY KEY,
+                            address TEXT,
+                            name TEXT,
+                            user TEXT
+                            password TEXT);
                         """)
         self._tg_db.commit()
         curs.close()
@@ -34,4 +42,29 @@ class DataBaseBot():
                     """, (user_id, user_name, name, subs))
         curs.close()
 
+    def user_exists(self, user_id: int) -> bool:
+        curs = self._tg_db.cursor()
+        curs.execute("""SELECT * FROM users where user_id = ?;
+                    """, (user_id,))
+        ret = curs.fetchone()
+        curs.close()
+        if ret is None:
+            return False
+        else:
+            return True
 
+    def new_cam(self, cloud_id: str, address: str, name: str, user: str = 'admin', password: str = '') -> None:
+        curs = self._tg_db.cursor()
+        curs.execute("""INSERT INTO cams
+                        (cloud_id, address, name, user, password)
+                        VALUES(?, ?, ?, ?, ?);
+                    """, (cloud_id, address, name, user, password))
+        curs.close()
+    
+    def cams_list(self) -> list:
+        curs = self._tg_db.cursor()
+        curs.execute("""SELECT * FROM cams
+                        """)
+        cams = curs.fetchall()
+        curs.close()
+        return cams

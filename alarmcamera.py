@@ -45,6 +45,7 @@ while True:
             bot.send_message(
                 user, f'Получено сообщение с камеры по адресу {addr[0]}:\n{json.dumps(reply, indent=4)}')
             bot.send_photo(user, snap)
+        cam.close()
 
     except (KeyboardInterrupt, SystemExit):
         break
