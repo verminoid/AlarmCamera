@@ -52,10 +52,16 @@ def get_snapshot(message):
 
     """    
     for name, cam in cams.items():
-        cam.login()
-        snap = cam.snapshot()
-        bot.send_photo(message.from_user.id, snap, caption=name)
-        cam.close()
+        if cam.login():
+            try:
+                snap = cam.snapshot()
+                bot.send_photo(message.from_user.id, snap, caption=name)
+            except:
+                bot.send_message(message.chat.id, f'Не удалось получить картинку с камеры {name}. IP: {address}. CloudId: {cloud_id}')
+            cam.close()
+        else:
+            bot.send_message(message.chat.id, f'Не удалось  подключиться к камере {name}. IP: {address}.     CloudId: {cloud_id}')
+        
 
 @bot.message_handler(commands=['new_cam'], func=lambda message: base.user_exists(message.from_user.id))
 def new_cam(message):
