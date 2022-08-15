@@ -33,7 +33,7 @@ class DataBaseBot():
         """        
         self._tg_db.close()
 
-    def list_users(self) -> list(int):
+    def list_users(self) -> list:
         """Return list of ID knowed users
 
         Returns:
