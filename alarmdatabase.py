@@ -14,7 +14,7 @@ class DataBaseBot():
                             cloud_id TEXT PRIMARY KEY,
                             address TEXT,
                             name TEXT,
-                            user TEXT
+                            user TEXT,
                             password TEXT);
                         """)
         self._tg_db.commit()
