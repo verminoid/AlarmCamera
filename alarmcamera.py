@@ -34,18 +34,14 @@ while True:
         data = conn.recv(len_data)
         conn.close()
         reply = json.loads(data)
-        print(datetime.now().strftime("[%Y-%m-%d %H:%M:%S]>>>"))
-        print(head, version, session, sequence_number, msgid, len_data)
-        print(json.dumps(reply, indent=4))
-        print("<<<")
         cam = DVRIPCam(addr[0], user='admin', password=secret.CAM_PASS)
-        cam.login()
-        snap = cam.snapshot()
-        for user in base.list_users():
-            bot.send_message(
-                user, f'Получено сообщение с камеры по адресу {addr[0]}:\n{json.dumps(reply, indent=4)}')
-            bot.send_photo(user, snap)
-        cam.close()
+        if cam.login():
+            snap = cam.snapshot()
+            for user in base.list_users(subs=True):
+                bot.send_message(
+                    user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя: {reply["StartTime"]}')
+                bot.send_photo(user, snap)
+            cam.close()
 
     except (KeyboardInterrupt, SystemExit):
         break

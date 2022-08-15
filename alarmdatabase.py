@@ -33,7 +33,7 @@ class DataBaseBot():
         """        
         self._tg_db.close()
 
-    def list_users(self) -> list:
+    def list_users(self, subs: bool = False) -> list:
         """Return list of ID knowed users
 
         Returns:
@@ -41,8 +41,10 @@ class DataBaseBot():
         """        
         users_id = []
         curs = self._tg_db.cursor()
-        curs.execute("""SELECT user_id FROM users
-                        """)
+        query = "SELECT user_id FROM users"
+        if subs:
+            query += " where subs = 1"
+        curs.execute(query)
         for user in  curs.fetchall():
             users_id.append(user[0])
         curs.close()

@@ -28,7 +28,7 @@ def extract_1_arg(arg):
 def start_handler(message):
     """ start проверяет пароль"""
     qstart = extract_arg(message.text)
-    if message.from_user.id in base.list_users():
+    if base.user_exists(message.from_user.id):
         bot.send_message(message.chat.id,
                         f"{message.from_user.first_name}, Я уже вас видел, для помощи - /help")
     else:
