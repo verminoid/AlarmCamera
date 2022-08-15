@@ -48,6 +48,9 @@ def start_handler(message):
 
 @bot.message_handler(commands=['snapshot'], func=lambda message: base.user_exists(message.from_user.id))
 def get_snapshot(message):
+    """get snapshot from all camera
+
+    """    
     for name, cam in cams.items():
         cam.login()
         snap = cam.snapshot()
@@ -56,6 +59,7 @@ def get_snapshot(message):
 
 @bot.message_handler(commands=['new_cam'], func=lambda message: base.user_exists(message.from_user.id))
 def new_cam(message):
+    """create new db entry of camera"""
     n_cam = extract_arg(message.text)
     if len(n_cam)>=2:
         cam = DVRIPCam(n_cam[0], user=n_cam[1], password=n_cam[2])
@@ -72,17 +76,18 @@ def new_cam(message):
 
 @bot.message_handler(commands=['Alarm'], func=lambda message: base.user_exists(message.from_user.id))
 def alarm_on_off(message):
+    """On/off Motion Detection on 1 or all camera """
     al_cam = extract_arg(message.text)
-    if len(al_cam) == 2:
+    if len(al_cam) == 2: # check if concreting camera
         if al_cam[1].lower() == 'all':
             l_cam = base.cams_list()
         else:
-            l_cam = base.selection(al_cam[1])
+            l_cam = base.selection(al_cam[1]) #todo selection 1 cam
             if l_cam is None:
                 bot.send_message(message.chat.id, 'Такая камера не найдена')
     else:
         l_cam = base.cams_list()
-    if al_cam[0].lower() in ['on', 'off']:
+    if al_cam[0].lower() in ['on', 'off']: # check action for camera
         for cloud_id, address, name, _, _ in l_cam:
             cam = cams[name]
             if cam.login():
