@@ -51,7 +51,7 @@ def get_snapshot(message):
     for name, cam in cams.items():
         cam.login()
         snap = cam.snapshot()
-        bot.send_photo(user, snap, caption=name)
+        bot.send_photo(message.from_user.id, snap, caption=name)
         cam.close()
 
 @bot.message_handler(commands=['new_cam'], func=lambda message: base.user_exists(message.from_user.id))
