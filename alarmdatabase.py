@@ -20,6 +20,7 @@ class DataBaseBot():
         self._tg_db.commit()
         curs.close()
         
+        
     def __del__(self):
         self._tg_db.close()
 
@@ -40,6 +41,7 @@ class DataBaseBot():
                         VALUES(?, ?, ?, ?);
                     """, (user_id, user_name, name, subs))
         curs.close()
+        self._tg_db.commit()
 
     def user_exists(self, user_id: int) -> bool:
         curs = self._tg_db.cursor()
@@ -59,6 +61,7 @@ class DataBaseBot():
                         VALUES(?, ?, ?, ?, ?);
                     """, (cloud_id, address, name, user, password))
         curs.close()
+        self._tg_db.commit()
     
     def cams_list(self) -> list:
         curs = self._tg_db.cursor()
