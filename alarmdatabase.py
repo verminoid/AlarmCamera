@@ -119,6 +119,6 @@ class DataBaseBot():
         curs = self._tg_db.cursor()
         curs.execute("""SELECT * FROM cams where name = ?;
                     """, (name,))
-        ret = curs.fetchone()
+        ret = curs.fetchall()
         curs.close()
         return ret

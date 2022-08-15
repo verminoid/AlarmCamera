@@ -101,7 +101,8 @@ def alarm_on_off(message):
         for cloud_id, address, name, _, _ in l_cam:
             cam = cams[name]
             if cam.login():
-                cam.set_info('Detect.MotionDetect.[0].Enable', command) 
+                cam.set_info('Detect.MotionDetect.[0].Enable', command)
+                bot.send_message(message.chat.id, f'Камера {name} Alarm: {al_cam[0].lower()}')
                 cam.close()
             else:
                 bot.send_message(message.chat.id, f'Не удалось  подключиться к камере {name}. IP: {address}.     CloudId: {cloud_id}')
