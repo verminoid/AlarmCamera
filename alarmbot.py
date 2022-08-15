@@ -82,19 +82,19 @@ def alarm_on_off(message):
         if al_cam[1].lower() == 'all':
             l_cam = base.cams_list()
         else:
-            l_cam = base.selection(al_cam[1]) #todo selection 1 cam
+            l_cam = base.selection(al_cam[1]) #selection 1 cam (first in list)
             if l_cam is None:
                 bot.send_message(message.chat.id, 'Такая камера не найдена')
     else:
         l_cam = base.cams_list()
     if al_cam[0].lower() in ['on', 'off']: # check action for camera
+        if al_cam[0].lower() == 'on':
+            command = True
+        else:
+            command = False
         for cloud_id, address, name, _, _ in l_cam:
             cam = cams[name]
             if cam.login():
-                if al_cam[0].lower() == 'on':
-                    command = True
-                else:
-                    command = False
                 cam.set_info('Detect.MotionDetect.[0].Enable', command) 
                 cam.close()
             else:
