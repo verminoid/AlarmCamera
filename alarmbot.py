@@ -1,5 +1,5 @@
 import telebot
-from dvrip import DVRIPCam #from NeiroN
+from dvrip import DVRIPCam #from NeiroNx
 import secret
 from alarmdatabase import DataBaseBot
 
@@ -69,3 +69,35 @@ def new_cam(message):
             bot.send_message(message.chat.id, 'Не удалось подключиться к камере с данными параметрами')
     else:
         bot.send_message(message.chat.id, 'Введите имя пользователя и пароль')
+
+@bot.message_handler(commands=['Alarm'], func=lambda message: base.user_exists(message.from_user.id))
+def alarm_on_off(message):
+    al_cam = extract_arg(message.text)
+    if len(al_cam) == 2:
+        if al_cam[1].lower() == 'all':
+            l_cam = base.cams_list()
+        else:
+            l_cam = base.selection(al_cam[1])
+            if l_cam is None:
+                bot.send_message(message.chat.id, 'Такая камера не найдена')
+    else:
+        l_cam = base.cams_list()
+    if al_cam[0].lower() in ['on', 'off']:
+        for cloud_id, address, name, _, _ in l_cam:
+            cam = cams[name]
+            if cam.login():
+                if al_cam[0].lower() == 'on':
+                    command = True
+                else:
+                    command = False
+                cam.set_info('Detect.MotionDetect.[0].Enable', command) 
+                cam.close()
+            else:
+                bot.send_message(message.chat.id, f'Не удалось  подключиться к камере {name}. IP: {address}.     CloudId: {cloud_id}')
+    else:
+        bot.send_message(message.chat.id, 'Неверная команда')
+            
+
+
+
+bot.infinity_polling()

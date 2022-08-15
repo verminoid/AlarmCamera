@@ -1,9 +1,8 @@
 import sqlite3
-from tkinter import NO
 
 class DataBaseBot():
     def __init__(self, base: str) -> None:
-        self._tg_db = sqlite3.connect(base)
+        self._tg_db = sqlite3.connect(base, check_same_thread=False)
         curs = self._tg_db.cursor()
         curs.execute("""CREATE TABLE IF NOT EXISTS users(
                             user_id INT PRIMARY KEY,
