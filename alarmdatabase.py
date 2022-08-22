@@ -1,5 +1,13 @@
 import sqlite3
 
+def ignore_case_collation(value1_, value2_):
+    if value1_.lower() == value2_.lower():
+        return 0
+    elif value1_.lower() < value2_.lower():
+        return -1
+    else:
+        return 1
+
 class DataBaseBot():
     """Module for connection with DB SQLite
     """    
@@ -10,6 +18,7 @@ class DataBaseBot():
             base (str): file name DB in OS
         """        
         self._tg_db = sqlite3.connect(base, check_same_thread=False)
+        self._tg_db.create_collation("NOCASE", ignore_case_collation)
         curs = self._tg_db.cursor()
         curs.execute("""CREATE TABLE IF NOT EXISTS users(
                             user_id INT PRIMARY KEY,
@@ -119,7 +128,7 @@ class DataBaseBot():
 
     def cam_selection(self, name: str) -> list:
         curs = self._tg_db.cursor()
-        curs.execute("""SELECT * FROM cams where name = ?;
+        curs.execute("""SELECT * FROM cams where name = ? COLLATE NOCASE;
                     """, (name,))
         ret = curs.fetchall()
         curs.close()
