@@ -8,12 +8,6 @@ DATABASE = 'data.db'
 base = DataBaseBot(DATABASE)
 bot = telebot.TeleBot(secret.TOKEN)
 
-cams = {}
-for cloud_id, address, name, user, password in base.cams_list():
-    cam = DVRIPCam(address, user=user, password=password)
-    if cam.login():
-        cam.close()
-        cams.update({name: cam})
 
 def extract_arg(arg):
     """извлечение аргументов"""
@@ -51,7 +45,13 @@ def get_snapshot(message):
     """get snapshot from all camera
 
     """    
-    for name, cam in cams.items():
+    cam_name = extract_1_arg(message)
+    if cam_name is None:
+        l_cams = base.cams_list()
+    else:
+        l_cams = base.cam_selection(cam_name)
+    for cloud_id, address, name, user, password in l_cams:
+        cam = DVRIPCam(address, user=user, password=password)
         if cam.login():
             try:
                 snap = cam.snapshot()
@@ -74,7 +74,6 @@ def new_cam(message):
             cloud_id = cam.get_system_info()['SerialNo']
             cam.close()
             base.new_cam(cloud_id=cloud_id, address=n_cam[0],   name=name, user=n_cam[1], password=n_cam[2])
-            cams.update({name: cam})
         else:
             bot.send_message(message.chat.id, 'Не удалось подключиться к камере с данными параметрами')
     else:
@@ -88,7 +87,7 @@ def alarm_on_off(message):
         if al_cam[1].lower() == 'all':
             l_cam = base.cams_list()
         else:
-            l_cam = base.selection(al_cam[1]) #selection 1 cam (first in list)
+            l_cam = base.cam_selection(al_cam[1]) #selection 1 cam (first in list)
             if l_cam is None:
                 bot.send_message(message.chat.id, 'Такая камера не найдена')
     else:
@@ -98,8 +97,8 @@ def alarm_on_off(message):
             command = True
         else:
             command = False
-        for cloud_id, address, name, _, _ in l_cam:
-            cam = cams[name]
+        for cloud_id, address, name, user, password in l_cam:
+            cam = DVRIPCam(address, user=user, password=password)
             if cam.login():
                 cam.set_info('Detect.MotionDetect.[0].Enable', command)
                 bot.send_message(message.chat.id, f'Камера {name} Alarm: {al_cam[0].lower()}')
