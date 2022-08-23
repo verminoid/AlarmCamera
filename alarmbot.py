@@ -57,6 +57,8 @@ def help_hedler(message):
     bot.send_message(message.chat.id,
             "Введи команду /alarm on или off чтобы включить или выключить детектор движения на всех камерах. Если добавить название камеры то управляется только она.")
     bot.send_message(message.chat.id,
+            "Введи команду /subs on или off чтобы включить или выключить подписку на оповещения по детектору движения на камерах.")
+    bot.send_message(message.chat.id,
             "Введи команду /new_cam IP USER PASSWORD чтобы добавить камеру в базу данных.")
     bot.send_message(
         message.chat.id, "Приятного пользования!", reply_markup=keyboard)
@@ -66,11 +68,11 @@ def get_snapshot(message):
     """get snapshot from all camera
 
     """    
-    cam_name = extract_1_arg(message)
+    cam_name = extract_1_arg(message.text)
     if cam_name is None:
         l_cams = base.cams_list()
     else:
-        l_cams = base.cam_selection(cam_name)
+        l_cams = base.cam_selection(cam_name[0])
     for cloud_id, address, name, user, password in l_cams:
         cam = DVRIPCam(address, user=user, password=password)
         if cam.login():
@@ -130,7 +132,17 @@ def alarm_on_off(message):
     else:
         bot.send_message(message.chat.id, 'Неверная команда', reply_markup=keyboard)
             
-
-
+@bot.message_handler(commands=['subs'], func=lambda message: base.user_exists(message.from_user.id))
+def subscribe_on_off(message):
+    query = extract_1_arg(message.text)
+    if len(query) and query[0].lower() in ['on', 'off']:
+        if query[0].lower() == 'on':
+            base.subs_user(message.from_user.id, True)
+            bot.send_message(message.chat.id, 'Вы подписаны на оповещения', reply_markup=keyboard)
+        else:
+            base.subs_user(message.from_user.id, False)
+            bot.send_message(message.chat.id, 'Подписка на оповещения удалена', reply_markup=keyboard)
+    else:
+        bot.send_message(message.chat.id, 'Неправильная команда, добавьте "on" или "off" ', reply_markup=keyboard)
 
 bot.infinity_polling()

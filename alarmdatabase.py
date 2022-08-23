@@ -126,6 +126,15 @@ class DataBaseBot():
         curs.close()
         return cams
 
+    def subs_user(self, user_id: int, subs: bool):
+        curs = self._tg_db.cursor()
+        curs.execute("""UPDATE users SET
+                        subs = ?
+                        WHERE user_id = ?;
+                    """, (subs, user_id))
+        curs.close()
+        self._tg_db.commit()
+
     def cam_selection(self, name: str) -> list:
         curs = self._tg_db.cursor()
         curs.execute("""SELECT * FROM cams where name = ? COLLATE NOCASE;
