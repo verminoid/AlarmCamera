@@ -69,7 +69,7 @@ def get_snapshot(message):
 
     """    
     cam_name = extract_1_arg(message.text)
-    if cam_name is None:
+    if len(cam_name) == 0:
         l_cams = base.cams_list()
     else:
         l_cams = base.cam_selection(cam_name[0])

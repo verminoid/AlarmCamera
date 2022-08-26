@@ -54,6 +54,8 @@ class DVRIPCam(object):
         "OPNetKeyboard": 1550,
         "OPPTZControl": 1400,
         "OPSNAP": 1560,
+        "OPFileQuery": 1440,
+        "OPFileDownload": 1426,
         "OPSendFile": 0x5F2,
         "OPSystemUpgrade": 0x5F5,
         "OPTalk": 1434,
