@@ -234,7 +234,10 @@ class DVRIPCam(object):
 
     def login(self):
         if self.socket is None:
-            self.connect()
+            try:
+                self.connect()
+            except SomethingIsWrongWithCamera:
+                return False
         data = self.send(
             1000,
             {
