@@ -19,6 +19,14 @@ server = socket(AF_INET, SOCK_STREAM)
 server.bind((ALRM_ADDRESS, ALRM_PORT))
 server.listen(5)
 
+log = "log.txt"
+
+
+def tolog(s):
+    logfile = open(datetime.now().strftime("%Y_%m_%d_") + log, "a+")
+    logfile.write(s)
+    logfile.close()
+
 DATABASE = 'data.db'
 base = DataBaseBot(DATABASE)
 
@@ -42,7 +50,7 @@ while True:
                     user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя: {reply["StartTime"]}')
                 bot.send_photo(user, snap)
             cam.close()
-
+        tolog(repr(data) + "\r\n")
     except (KeyboardInterrupt, SystemExit):
         break
 

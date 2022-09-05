@@ -21,7 +21,7 @@ def extract_1_arg(arg):
     return arg.split(maxsplit=1)[1:]
 
 
-keyboard = ReplyKeyboardMarkup()
+keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 kb_snap = KeyboardButton('/snapshot')
 kb_alarm_on = KeyboardButton('/alarm on')
 kb_alarm_off = KeyboardButton('/alarm off')
