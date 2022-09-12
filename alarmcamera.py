@@ -3,7 +3,7 @@ import struct
 import sys
 from datetime import datetime
 from os import path
-from socket import AF_INET, SOCK_STREAM, socket, gethostbyname, gethostname
+from socket import AF_INET, SOCK_STREAM, SOCK_DGRAM, socket, gethostbyname, gethostname
 from time import sleep
 
 import telebot
@@ -12,8 +12,13 @@ import secret
 from alarmdatabase import DataBaseBot
 from dvrip import DVRIPCam # From NeiroN
 
-ALRM_ADDRESS = gethostbyname(gethostname())
+s = socket(AF_INET, SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+
+ALRM_ADDRESS = s.getsockname()[0]
 ALRM_PORT = 15002
+
+s.close()
 
 server = socket(AF_INET, SOCK_STREAM)
 server.bind((ALRM_ADDRESS, ALRM_PORT))
