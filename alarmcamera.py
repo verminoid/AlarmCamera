@@ -3,7 +3,7 @@ import struct
 import sys
 from datetime import datetime
 from os import path
-from socket import AF_INET, SOCK_STREAM, socket
+from socket import AF_INET, SOCK_STREAM, socket, gethostbyname, gethostname
 from time import sleep
 
 import telebot
@@ -12,7 +12,7 @@ import secret
 from alarmdatabase import DataBaseBot
 from dvrip import DVRIPCam # From NeiroN
 
-ALRM_ADDRESS = "0.0.0.0"
+ALRM_ADDRESS = gethostbyname(gethostname())
 ALRM_PORT = 15002
 
 server = socket(AF_INET, SOCK_STREAM)
@@ -31,6 +31,27 @@ DATABASE = 'data.db'
 base = DataBaseBot(DATABASE)
 
 bot = telebot.TeleBot(secret.TOKEN)
+
+def check_cam_par():
+    l_cams = base.cams_list()
+    for cloud_id, address, name, user, password in l_cams:
+        cam = DVRIPCam(address, user=user, password=password)
+        if cam.login():
+            try:
+                alarm_par = cam.get_info("NetWork.AlarmServer.[0]")
+                if not (alarm_par["Alarm"] and alarm_par["Enable"] and alarm_par["Server"]["Name"] == ALRM_ADDRESS):
+                    alarm_par["Alarm"] = True
+                    alarm_par["Enable"] = True
+                    alarm_par["Server"]["Name"] = ALRM_ADDRESS
+                    cam.set_info("NetWork.AlarmServer.[0]", alarm_par)
+                    tolog(f"Change alarm parameters on {name} ({address}, {cloud_id})" + "\r\n")
+            except:
+                tolog(f"Error on write parameter in {name} ({address}, {cloud_id})" + "\r\n")
+            cam.close()
+        else:
+            tolog(f"Can't connect {name} ({address}, {cloud_id})" + "\r\n")
+
+
 
 while True:
     try:
