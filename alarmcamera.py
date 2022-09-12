@@ -53,7 +53,7 @@ def check_cam_par():
         else:
             tolog(f"Can't connect {name} ({address}, {cloud_id})" + "\r\n")
 
-
+check_cam_par()
 
 while True:
     try:
