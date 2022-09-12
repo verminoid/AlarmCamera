@@ -3,7 +3,7 @@ import struct
 import sys
 from datetime import datetime
 from os import path
-from socket import AF_INET, SOCK_STREAM, SOCK_DGRAM, socket, gethostbyname, gethostname
+from socket import AF_INET, SOCK_STREAM, SOCK_DGRAM, socket
 from time import sleep
 
 import telebot
@@ -33,6 +33,9 @@ def tolog(s):
     logfile.close()
 
 DATABASE = 'data.db'
+
+tolog(datetime.now().strftime("%H_%M") +"Restart Server" + "\r\n")
+
 base = DataBaseBot(DATABASE)
 
 bot = telebot.TeleBot(secret.TOKEN)
