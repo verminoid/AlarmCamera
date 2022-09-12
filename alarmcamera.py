@@ -45,6 +45,8 @@ def check_cam_par():
                     alarm_par["Server"]["Name"] = ALRM_ADDRESS
                     cam.set_info("NetWork.AlarmServer.[0]", alarm_par)
                     tolog(f"Change alarm parameters on {name} ({address}, {cloud_id})" + "\r\n")
+                else:
+                    tolog(f"Nothing change {name} ({address}, {cloud_id})" + "\r\n")
             except:
                 tolog(f"Error on write parameter in {name} ({address}, {cloud_id})" + "\r\n")
             cam.close()
