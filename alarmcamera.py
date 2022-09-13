@@ -41,6 +41,8 @@ base = DataBaseBot(DATABASE)
 bot = telebot.TeleBot(secret.TOKEN)
 
 def check_cam_par():
+    """Check enabled function alarm-server
+    """
     l_cams = base.cams_list()
     for cloud_id, address, name, user, password in l_cams:
         cam = DVRIPCam(address, user=user, password=password)
@@ -73,14 +75,15 @@ while True:
         data = conn.recv(len_data)
         conn.close()
         reply = json.loads(data)
-        cam = DVRIPCam(addr[0], user='admin', password=secret.CAM_PASS)
-        if cam.login():
-            snap = cam.snapshot()
-            for user in base.list_users(subs=True):
-                bot.send_message(
-                    user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя: {reply["StartTime"]}')
-                bot.send_photo(user, snap)
-            cam.close()
+        if reply["Status"] == "Start": 
+            cam = DVRIPCam(addr[0], user='admin', password=secret.CAM_PASS)
+            if cam.login():
+                snap = cam.snapshot()
+                for user in base.list_users(subs=True):
+                    bot.send_message(
+                        user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя: {reply  ["StartTime"]}')
+                    bot.send_photo(user, snap)
+                cam.close()
         tolog(repr(data) + "\r\n")
     except (KeyboardInterrupt, SystemExit):
         break

@@ -1,4 +1,4 @@
-from operator import imod
+
 from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from dvrip import DVRIPCam #from NeiroNx
