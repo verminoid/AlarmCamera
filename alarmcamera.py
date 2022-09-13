@@ -34,7 +34,7 @@ def tolog(s):
 
 DATABASE = 'data.db'
 
-tolog(datetime.now().strftime("%H_%M") +"Restart Server" + "\r\n")
+tolog(datetime.now().strftime("%H-%M") +": Restart Server" + "\r\n")
 
 base = DataBaseBot(DATABASE)
 
