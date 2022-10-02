@@ -20,9 +20,7 @@ ALRM_PORT = 15002
 
 s.close()
 
-server = socket(AF_INET, SOCK_STREAM)
-server.bind((ALRM_ADDRESS, ALRM_PORT))
-server.listen(5)
+
 
 log = "log.txt"
 
@@ -64,6 +62,10 @@ def check_cam_par():
 
 
 def main():
+
+    server = socket(AF_INET, SOCK_STREAM)
+    server.bind((ALRM_ADDRESS, ALRM_PORT))
+    server.listen(5)
 
     tolog(datetime.now().strftime("%H-%M") +": Restart Server" + "\r\n")
 
