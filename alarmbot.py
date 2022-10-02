@@ -4,6 +4,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from dvrip import DVRIPCam #from NeiroNx
 import secret
 from alarmdatabase import DataBaseBot
+import alarmcamera
 
 DATABASE = 'data.db'
 
@@ -97,6 +98,7 @@ def new_cam(message):
             cloud_id = cam.get_system_info()['SerialNo']
             cam.close()
             base.new_cam(cloud_id=cloud_id, address=n_cam[0],   name=name, user=n_cam[1], password=n_cam[2])
+            alarmcamera.check_cam_par()
             bot.send_message(message.chat.id, f'Камера {name}({cloud_id},{n_cam[0]}) успешно добавлена.', reply_markup=keyboard)
         else:
             bot.send_message(message.chat.id, 'Не удалось подключиться к камере с данными параметрами', reply_markup=keyboard)
@@ -145,4 +147,21 @@ def subscribe_on_off(message):
     else:
         bot.send_message(message.chat.id, 'Неправильная команда, добавьте "on" или "off" ', reply_markup=keyboard)
 
-bot.infinity_polling()
+@bot.message_handler(commands=['edit_cam'], func=lambda message: base.user_exists(message.from_user.id))
+def edit_cam_address(message):
+    query = extract_arg(message.text)
+    if len(query) == 2:
+        cloud_id = query[0]
+        address = query[1]
+        base.cam_edit(cloud_id, address)
+        alarmcamera.check_cam_par()
+        bot.send_message(message.chat.id, f'Локальный адрес камеры {cloud_id} изменен на: {address}', reply_markup=keyboard)
+    else:
+        bot.send_message(message.chat.id, 'Неправильный запрос. введите /edit_cam cloud_id ip', reply_markup=keyboard)
+
+def main():
+    bot.infinity_polling()
+
+
+if __name__ == '__main__':
+    main()

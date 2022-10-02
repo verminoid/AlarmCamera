@@ -34,7 +34,6 @@ def tolog(s):
 
 DATABASE = 'data.db'
 
-tolog(datetime.now().strftime("%H-%M") +": Restart Server" + "\r\n")
 
 base = DataBaseBot(DATABASE)
 
@@ -63,30 +62,39 @@ def check_cam_par():
         else:
             tolog(f"Can't connect {name} ({address}, {cloud_id})" + "\r\n")
 
-check_cam_par()
 
-while True:
-    try:
-        conn, addr = server.accept()
-        head, version, session, sequence_number, msgid, len_data = struct.unpack(
-            "BB2xII2xHI", conn.recv(20)
-        )
-        sleep(0.1)  # Just for recive whole packet
-        data = conn.recv(len_data)
-        conn.close()
-        reply = json.loads(data)
-        if reply["Status"] == "Start": 
-            cam = DVRIPCam(addr[0], user='admin', password=secret.CAM_PASS)
-            if cam.login():
-                snap = cam.snapshot()
-                for user in base.list_users(subs=True):
-                    bot.send_message(
-                        user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя: {reply  ["StartTime"]}')
-                    bot.send_photo(user, snap)
-                cam.close()
-        tolog(repr(data) + "\r\n")
-    except (KeyboardInterrupt, SystemExit):
-        break
+def main():
 
-server.close()
-sys.exit(1)
+    tolog(datetime.now().strftime("%H-%M") +": Restart Server" + "\r\n")
+
+    check_cam_par()
+
+    while True:
+        try:
+            conn, addr = server.accept()
+            head, version, session, sequence_number, msgid, len_data = struct.unpack(
+                "BB2xII2xHI", conn.recv(20)
+            )
+            sleep(0.1)  # Just for recive whole packet
+            data = conn.recv(len_data)
+            conn.close()
+            reply = json.loads(data)
+            if reply["Status"] == "Start": 
+                cam = DVRIPCam(addr[0], user='admin', password=secret.CAM_PASS)
+                if cam.login():
+                    snap = cam.snapshot()
+                    for user in base.list_users(subs=True):
+                        bot.send_message(
+                            user, f'Получена тревога с камеры {cam.get_info("ChannelTitle")[0]}\nВремя:     {reply  ["StartTime"]}')
+                        bot.send_photo(user, snap, disable_notification=True)
+                    cam.close()
+            tolog(repr(data) + "\r\n")
+        except (KeyboardInterrupt, SystemExit):
+            break
+
+    server.close()
+    sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

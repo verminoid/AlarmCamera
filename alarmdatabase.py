@@ -142,3 +142,12 @@ class DataBaseBot():
         ret = curs.fetchall()
         curs.close()
         return ret
+
+    def cam_edit(self, cloud_id: str, address: str) -> None:
+        curs = self._tg_db.cursor()
+        curs.execute("""UPDATE cams SET
+                        address = ?
+                        WHERE cloud_id = ?;
+                    """, (address, cloud_id))
+        curs.close()
+        self._tg_db.commit()
